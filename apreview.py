@@ -3,7 +3,7 @@
 import bimpy
 from PIL import Image
 from argparse import ArgumentParser
-from time import time
+from time import (time, sleep)
 import os
 
 __version__ = "0.1"
@@ -12,6 +12,22 @@ DEF_WIDTH = 16
 DEF_HEIGHT = 16
 DEF_SCALE = 14
 DEF_MTIME = 5
+
+
+def with_retry(fn):
+    def wrap():
+        retry = 0
+        while True:
+            try:
+                result = fn()
+            except IOError:
+                retry += 1
+                sleep(1)
+                if retry == 3:
+                    raise
+            else:
+                return result
+    return wrap
 
 
 def main():
@@ -36,8 +52,12 @@ def main():
     args = parser.parse_args()
 
     def load_image(filename):
+        @with_retry
+        def load():
+            return Image.open(filename).convert("RGB")
+
         try:
-            image = Image.open(filename).convert("RGB")
+            image = load()
         except IOError:
             parser.error("failed to open the image")
 
