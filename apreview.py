@@ -47,7 +47,7 @@ def main():
     parser.add_argument("--mtime", dest="mtime", type=int, default=DEF_MTIME,
                         help="seconds between checks for changes (default: %s)" % DEF_MTIME)
 
-    parser.add_argument("image", help="image to convert")
+    parser.add_argument("image", help="image to preview")
 
     args = parser.parse_args()
 
